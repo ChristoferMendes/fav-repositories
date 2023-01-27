@@ -85,11 +85,6 @@ export const Main = () => {
 
   }, [repo, repositories]);
 
-  const handleCall = useCallback(() => {
-    console.log('useCallback')
-    console.log(repositories)
-  }, [repositories])
-
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
