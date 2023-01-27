@@ -52,8 +52,7 @@ export const Main = () => {
     const submit = async () => {
       setLoading(true);
       setAlert(false);
-
-      
+            
       try {
         if (name === '' || owner === '') {
           throw new Error('You need to type a repository')
@@ -73,7 +72,9 @@ export const Main = () => {
 
         const repository = { name: data.full_name, url: data.html_url }
 
-        setRepositories(prev => [...prev, { data: repository }])
+        const addNewRepository = (prev: RepositoriesState[]) => [...prev, { data: repository }]
+
+        setRepositories(addNewRepository)
         setRepo({ name: '', owner: '' })
       } catch {
         setAlert(true);

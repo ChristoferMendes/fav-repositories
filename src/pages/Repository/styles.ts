@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-interface IssueFilterProps { 
+interface IssueFilterProps {
   active: number;
 }
 
@@ -126,8 +126,6 @@ export const PageActions = styled.div`
 `
 
 export const StateFilter = styled.div<IssueFilterProps>`
-  
-
   button {
     margin: 10px;
     width: 3rem;
@@ -136,9 +134,9 @@ export const StateFilter = styled.div<IssueFilterProps>`
 
 
     &:nth-child(${props => props.active + 1}) {
-    background: #0071db;
-    color: #fff;
-  }
+      background: #0071db;
+      color: #fff;
+    }
   }
 
   

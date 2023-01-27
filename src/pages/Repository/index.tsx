@@ -8,10 +8,10 @@ import { api } from '../../services/api';
 import { BackButton, Container, IssuesList, Owner, PageActions, StateFilter } from './styles'
 
 interface IRepository {
-    owner?: { avatar_url: string, login: string; }
-    name?: string;
-    description?: string;
-    html_url?: string;
+  owner?: { avatar_url: string, login: string; }
+  name?: string;
+  description?: string;
+  html_url?: string;
 }
 
 interface Issues {
@@ -19,7 +19,7 @@ interface Issues {
   user: { avatar_url: string, login: string }
   title: string;
   html_url: string;
-  labels: [{id: number, name: string}];
+  labels: [{ id: number, name: string }];
 }
 
 type RepositoryState = IRepository;
@@ -31,13 +31,12 @@ export const Repository = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const issueState = [
-    {state: 'all', label: 'All'},
-    {state: 'open', label: 'Open'},
-    {state: 'closed', label: 'Closed'}
+    { state: 'all', label: 'All' },
+    { state: 'open', label: 'Open' },
+    { state: 'closed', label: 'Closed' }
   ]
   const [issueFocus, setIssueFocus] = useState(0);
-  const [cursor, setCursor] = useState(true);
-  
+
   useEffect(() => {
     (async () => {
       const [repositoryResponse, issuesResponse] = await Promise.all([
@@ -56,78 +55,78 @@ export const Repository = () => {
     })()
   }, [repositoryName])
 
-  useEffect(() => {
-    (async () => {
-      const response = await api.get(`/repos/${repositoryName}/issues`, {
-        params: {
-          state: issueState[issueFocus].state,
-          page,
-          per_page: 5,
-        }
-      })
-
-      setIssues(response.data)
-    })()
-  }, [repositoryName, page, issueState, issueFocus])
-
   const handlePage = (action: string) => {
     const goBack = page - 1;
     const goForward = page + 1;
     const handleAction = action === 'back' ? goBack : goForward;
     setPage(handleAction)
+    fetchMore(handleAction)
   }
-  
-  const handleIssueFilter = (index: number) => {
+
+  const handleIssueFilter = (index: number, page: number) => {
     setIssueFocus(index);
+    console.log(page)
+    fetchMore(page)
   }
 
   if (loading) {
     return <Loading />
   }
 
+  const fetchMore = async (page: number) => {
+    const res = await api.get(`/repos/${repositoryName}/issues`, {
+      params: {
+        state: issueState[issueFocus].state,
+        page,
+        per_page: 5
+      }
+    })
+    setIssues(res.data)
+  }
+
+  const firstWaitInMilisseconds = 300;
+  const secondWaitInMilisseconds = 500;
+
   return (
     <Container>
-      <BackButton to={'/'}> 
+      <BackButton to={'../'}>
         <FaArrowLeft color='#000' size={30} />
       </BackButton>
-  
-       <Owner>
-        <img 
-          src={repository.owner?.avatar_url} 
+
+      <Owner>
+        <img
+          src={repository.owner?.avatar_url}
           alt={`${repository.owner?.login} avatar`}
         />
         <h1>
           <a href={repository.html_url} target='_blank'>{repositoryName}</a>
         </h1>
         <div>
-          <TypeAnimation 
+          <TypeAnimation
             sequence={[
               `What ${repository.name} repository is about?`,
-              300,
+              firstWaitInMilisseconds,
               `${repository.description}`,
-              500,
-              () => {
-                setCursor(false)
-              }
+              secondWaitInMilisseconds,
             ]}
             wrapper={'div'}
-            cursor={cursor}
+            cursor={true}
           />
         </div>
-       </Owner>
+      </Owner>
 
       <StateFilter active={issueFocus}>
         {issueState.map((row, index) => (
-          <button 
-          type='button' 
-          key={row.label}
-          onClick={() => handleIssueFilter(index)}>{row.label}</button>
+          <button
+            type='button'
+            key={row.label}
+            onClick={() => handleIssueFilter(index, page)}>{row.label}</button>
         ))}
       </StateFilter>
-        
-      
-       <IssuesList>
-        
+
+
+      <IssuesList>
+
         {issues.map(issue => (
           <li key={String(issue.id)}>
             <img src={issue.user.avatar_url} alt={issue.user.login} />
@@ -144,18 +143,18 @@ export const Repository = () => {
             </div>
           </li>
         ))}
-       </IssuesList>
+      </IssuesList>
 
-       <PageActions>
-          <button 
-          type='button' 
+      <PageActions>
+        <button
+          type='button'
           onClick={() => handlePage('back')}
           disabled={page < 2}
-          >
-            Previous
-          </button>
-          <button type='button' onClick={() => handlePage('next')}>Next</button>
-       </PageActions>
+        >
+          Previous
+        </button>
+        <button type='button' onClick={() => handlePage('next')}>Next</button>
+      </PageActions>
     </Container>
   )
 }
