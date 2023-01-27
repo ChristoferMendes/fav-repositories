@@ -1,12 +1,9 @@
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash, FaSlash } from 'react-icons/fa'
 
 import { Container, Form, SubmitButton, List, DeleteButton } from './styles'
 import { api } from '../../services/api';
 import { Link } from 'react-router-dom';
-import { RenderHearts } from '../../components/RenderHearts';
-import { IconBase } from 'react-icons';
-
 interface RepositoriesState {
   data: {
     name: string;
@@ -19,7 +16,7 @@ interface Repository {
   html_url: string;
 }
 
-enum Names  {
+enum Names {
   Owner = 'owner',
   Name = 'name'
 }
@@ -52,7 +49,7 @@ export const Main = () => {
     const submit = async () => {
       setLoading(true);
       setAlert(false);
-            
+
       try {
         if (name === '' || owner === '') {
           throw new Error('You need to type a repository')
@@ -88,6 +85,10 @@ export const Main = () => {
 
   }, [repo, repositories]);
 
+  const handleCall = useCallback(() => {
+    console.log('useCallback')
+    console.log(repositories)
+  }, [repositories])
 
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
